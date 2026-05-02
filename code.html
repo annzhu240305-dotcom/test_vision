@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Image Editor</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: white;
+      text-align: center;
+      padding: 40px;
+    }
+
+    img {
+      max-width: 400px;
+      margin-bottom: 20px;
+    }
+
+    .controls {
+      width: 300px;
+      margin: 0 auto;
+    }
+
+    input {
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Отредактируй изображение</h2>
+
+  <img id="preview" src="img.jpg">
+
+  <div class="controls">
+    <label>Яркость</label>
+    <input type="range" id="brightness" min="0" max="200" value="100">
+
+    <label>Контраст</label>
+    <input type="range" id="contrast" min="0" max="200" value="100">
+
+    <label>Размытие</label>
+    <input type="range" id="blur" min="0" max="10" value="0">
+  </div>
+
+  <button id="download">Скачать изображение</button>
+
+  <canvas id="canvas" style="display:none;"></canvas>
+
+  <script>
+    const img = document.getElementById("preview");
+
+    const brightness = document.getElementById("brightness");
+    const contrast = document.getElementById("contrast");
+    const blur = document.getElementById("blur");
+
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    function updateImage() {
+      const filter = `
+        brightness(${brightness.value}%)
+        contrast(${contrast.value}%)
+        blur(${blur.value}px)
+      `;
+
+      // применяем визуально
+      img.style.filter = filter;
+    }
+
+    brightness.addEventListener("input", updateImage);
+    contrast.addEventListener("input", updateImage);
+    blur.addEventListener("input", updateImage);
+
+    document.getElementById("download").onclick = () => {
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+
+      ctx.filter = `
+        brightness(${brightness.value}%)
+        contrast(${contrast.value}%)
+        blur(${blur.value}px)
+      `;
+
+      ctx.drawImage(img, 0, 0);
+
+      const link = document.createElement("a");
+      link.download = "my-image.png";
+      link.href = canvas.toDataURL();
+      link.click();
+    };
+  </script>
+
+</body>
+</html>
